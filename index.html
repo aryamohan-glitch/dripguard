@@ -1,0 +1,50 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DripGuard AI Prototype</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+    <h1>DripGuard AI Monitor</h1>
+    <button type="button" onclick="init()">Start Camera</button>
+    <div id="webcam-container"></div>
+    <div id="label-container"></div>
+
+    <script type="text/javascript">
+        // This looks for the model files in the same folder as this index.html
+        const modelURL = "model.json";
+        const metadataURL = "metadata.json";
+
+        let model, webcam, labelContainer;
+
+        async function init() {
+            model = await tmImage.load(modelURL, metadataURL);
+            webcam = new tmImage.Webcam(200, 200, true);
+            await webcam.setup();
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            labelContainer = document.getElementById("label-container");
+        }
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            labelContainer.innerHTML = "";
+            for (let i = 0; i < prediction.length; i++) {
+                const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.appendChild(document.createElement("div")).innerHTML = classPrediction;
+            }
+        }
+    </script>
+</body>
+</html>
+```
