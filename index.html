@@ -1,8 +1,8 @@
-```html
+html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>DripGuard AI Prototype</title>
+    <title>DripGuard AI Monitor</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
 </head>
@@ -13,14 +13,15 @@
     <div id="label-container"></div>
 
     <script type="text/javascript">
-         tf.env().set('WEBGL_FORCE_CPU_MODE', true);
-        // This looks for the model files in the same folder as this index.html
+        // 1. Define these outside the function
         const modelURL = "model.json";
         const metadataURL = "metadata.json";
-
         let model, webcam, labelContainer;
 
         async function init() {
+            // 2. Force CPU mode here, inside the function
+            tf.env().set('WEBGL_FORCE_CPU_MODE', true);
+            
             model = await tmImage.load(modelURL, metadataURL);
             webcam = new tmImage.Webcam(200, 200, true);
             await webcam.setup();
@@ -48,4 +49,3 @@
     </script>
 </body>
 </html>
-```
